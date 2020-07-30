@@ -1,0 +1,8 @@
+FROM ruby:2.6.3
+
+RUN echo 1
+RUN apt update -y
+RUN apt upgrade -y
+RUN apt install -y time
+RUN wget https://github.com/sharkdp/hyperfine/releases/download/v1.10.0/hyperfine_1.10.0_amd64.deb && dpkg -i hyperfine_1.10.0_amd64.deb
+CMD hyperfine --min-runs 10 --warmup 2 'ruby -e "GC.disable; 300_000_000.times{1+1}"'

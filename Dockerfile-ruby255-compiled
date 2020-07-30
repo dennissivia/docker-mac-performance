@@ -1,0 +1,24 @@
+FROM debian:buster
+
+RUN apt update -y
+RUN apt upgrade -y
+
+# just to make sure
+RUN apt remove -y clang ruby gcc
+
+RUN apt install -y wget software-properties-common make lsb-release gnupg2
+RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+
+RUN apt update -y
+RUN apt upgrade -y
+
+RUN apt install -y clang-10
+# RUN ln -s /usr/bin/clang-10 /usr/bin/clang
+
+RUN wget https://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.5.tar.gz
+RUN tar -xvf ruby-2.5.5.tar.gz
+RUN cd ruby-2.5.5 && CC=/usr/bin/clang-10 ./configure
+RUN cd ruby-2.5.5 && make && make install
+
+RUN wget https://github.com/sharkdp/hyperfine/releases/download/v1.10.0/hyperfine_1.10.0_amd64.deb && dpkg -i hyperfine_1.10.0_amd64.deb
+CMD hyperfine --min-runs 10 --warmup 2 'ruby -e "GC.disable; 300_000_000.times{1+1}"'
