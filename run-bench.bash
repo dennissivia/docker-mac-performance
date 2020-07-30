@@ -1,13 +1,22 @@
 #!/bin/bash -l
 
 PAUSE_TIME=30
+# RUNS=10
 
 echo "Starting docker run ruby-2.5.5"
 docker run -it --rm  --mount type=tmpfs,destination=/tmp ruby-bench:ruby-2.5.5
 sleep $PAUSE_TIME
 
-echo "Starting docker run ruby-2.6.3"
-docker run -it --rm  --mount type=tmpfs,destination=/tmp ruby-bench:ruby-2.6.3
+echo "Starting docker run ruby-2.6.3 (normal)"
+docker run -it --rm ruby-bench:ruby-2.6.3
+sleep $PAUSE_TIME
+
+echo "Starting docker run ruby-2.6.3 (with tmpfs)"
+docker run -it --rm  --mount type=tmpfs,destination=/tmp ruby-bench:ruby-2.6.3 hyperfine --min-runs 10 --warmup 2 "ruby -e 'GC.disable; 300_000_000.times{1+1}'"
+sleep $PAUSE_TIME
+
+echo "Starting docker run ruby-2.6.3 (no JIT)"
+docker run -it --rm  --mount type=tmpfs,destination=/tmp ruby-bench:ruby-2.6.3 hyperfine --min-runs 10 --warmup 2 "ruby --disable-jit -e 'GC.disable; 300_000_000.times{1+1}'"
 sleep $PAUSE_TIME
 
 echo "Starting docker run debian with installed ruby-2.5.5"
