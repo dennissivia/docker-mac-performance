@@ -11,5 +11,4 @@ apt install -y clang-10
 
 wget https://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.5.tar.gz
 tar -xvf ruby-2.5.5.tar.gz
-cd ruby-2.5.5 && CC=/usr/bin/clang-10 ./configure
-cd ruby-2.5.5 && make && make install
+cd ruby-2.5.5 && CC=/usr/bin/clang-10 ./configure && make install
